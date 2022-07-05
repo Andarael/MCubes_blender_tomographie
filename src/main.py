@@ -3,12 +3,17 @@ import cv2
 import numpy as np
 import mcubes
 from tqdm import tqdm
+from absl import app, flags
 
-RES_MULT = .1
-START_IMG = 0
-NB_IMG = 255
-ISO_LEVEL = 127
+flags.DEFINE_string("INPUT_PATH", default="G:/Mon Drive/Scolaire/M1_Limoges/stage M1/Work/data/Tomographie/4_processed", help="Input image folder")
+flags.DEFINE_string("OUTPUT_FILE", default="mesh.obj", help="Output mesh file")
 
+flags.DEFINE_float("RES_MULT", default=0.5, help="Image resolution multiplier")
+flags.DEFINE_integer("START_IMG", default=0, help="Start image")
+flags.DEFINE_integer("NB_IMG", default=0, help="Number of images to load")
+flags.DEFINE_integer("ISO_LEVEL", default=127, help="Iso level")
+
+FLAGS = flags.FLAGS
 
 class Mesh:
     def __init__(self, vertices, triangles):
@@ -17,7 +22,7 @@ class Mesh:
         self.nb_vertices = len(vertices)
         self.nb_triangles = len(triangles)
         print("==>> nb_vertices: ", self.nb_vertices)
-        print("==>> self.nb_triangles: ", self.nb_triangles)
+        print("==>> nb_triangles: ", self.nb_triangles)
 
     def export(self, filename):
         print(f"exporting mesh to {filename} ... ")
@@ -29,8 +34,6 @@ def gen_mesh(data, iso_level):
     print(f"marching cubes with iso_level {iso_level}")
     vertices, triangles = mcubes.marching_cubes(data, iso_level)
     print("finished marching cubes")
-    print(f"vertices: {vertices.shape}")
-    print(f"triangles: {triangles.shape}")
 
     return Mesh(vertices, triangles)
 
@@ -49,7 +52,7 @@ def load_data(finepath):
         img_path = os.path.join(finepath, image_file)
         img = cv2.imread(img_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        img = cv2.resize(img, None, fx=RES_MULT, fy=RES_MULT)
+        img = cv2.resize(img, None, fx=FLAGS.RES_MULT, fy=FLAGS.RES_MULT)
         # img = img.astype(np.float32)
         # img = (img - 127.0) / 255.0
         all_images.append(img)
@@ -58,20 +61,19 @@ def load_data(finepath):
 
 def get_ranges(image_files):
     nb_images = len(image_files)
-    start_in_range = START_IMG < nb_images and START_IMG > 1
-    start = START_IMG if (start_in_range) else 0
-    end = nb_images if (NB_IMG < 1) else min(NB_IMG + start, nb_images)
+    start_in_range = FLAGS.START_IMG < nb_images and FLAGS.START_IMG > 1
+    start = FLAGS.START_IMG if (start_in_range) else 0
+    end = nb_images if (FLAGS.NB_IMG < 1) else min(FLAGS.NB_IMG + start, nb_images)
     return start, end
 
 
-if __name__ == "__main__":
-    filepath = "G:/Mon Drive/Scolaire/M1_Limoges/stage M1/Work/data/Tomographie/4_processed"
-
-    data = load_data(filepath)
-
-    print("==>> data.shape: ", data.shape)
-
-    mesh = gen_mesh(data, ISO_LEVEL)
-    mesh.export("mesh.obj")
+def main(argv):
+    data = load_data(FLAGS.INPUT_PATH)
+    mesh = gen_mesh(data, FLAGS.ISO_LEVEL)
+    mesh.export(FLAGS.OUTPUT_FILE)
 
     print("Done !")
+
+
+if __name__ == "__main__":
+    app.run(main)
