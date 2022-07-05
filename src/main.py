@@ -8,12 +8,14 @@ from absl import app, flags
 flags.DEFINE_string("INPUT_PATH", default="G:/Mon Drive/Scolaire/M1_Limoges/stage M1/Work/data/Tomographie/4_processed", help="Input image folder")
 flags.DEFINE_string("OUTPUT_FILE", default="mesh.obj", help="Output mesh file")
 
-flags.DEFINE_float("RES_MULT", default=0.5, help="Image resolution multiplier")
 flags.DEFINE_integer("START_IMG", default=0, help="Start image")
 flags.DEFINE_integer("NB_IMG", default=0, help="Number of images to load")
+
+flags.DEFINE_float("RES_MULT", default=0.5, help="Image resolution multiplier")
 flags.DEFINE_integer("ISO_LEVEL", default=127, help="Iso level")
 
 FLAGS = flags.FLAGS
+
 
 class Mesh:
     def __init__(self, vertices, triangles):
