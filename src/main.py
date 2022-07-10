@@ -47,7 +47,7 @@ def load_data(finepath):
     start, end = get_ranges(image_files)
     image_files = image_files[start: end]  # cut the number of files to load if necessary
 
-    print(f"loading images from {finepath}, starting at {image_files[0]} to {image_files[-1]}")
+    print(f"\nloading images from {finepath}, starting at {image_files[0]} to {image_files[-1]}\n")
 
     all_images = []
     for image_file in tqdm(image_files):
