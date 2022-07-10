@@ -40,18 +40,18 @@ def gen_mesh(data, iso_level):
     return Mesh(vertices, triangles)
 
 
-def load_data(finepath):
-    image_files = os.listdir(finepath)
+def load_data(filepath):
+    image_files = os.listdir(filepath)
     image_files.sort(key=lambda x: int(x.split('.')[0]))  # sort files
 
     start, end = get_ranges(image_files)
     image_files = image_files[start: end]  # cut the number of files to load if necessary
 
-    print(f"\nloading images from {finepath}, starting at {image_files[0]} to {image_files[-1]}\n")
+    print(f"\nloading images from {filepath}, starting at {image_files[0]} to {image_files[-1]}\n")
 
     all_images = []
     for image_file in tqdm(image_files):
-        img_path = os.path.join(finepath, image_file)
+        img_path = os.path.join(filepath, image_file)
         img = cv2.imread(img_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img = cv2.resize(img, None, fx=FLAGS.RES_MULT, fy=FLAGS.RES_MULT)
