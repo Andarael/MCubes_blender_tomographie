@@ -38,7 +38,8 @@ class Mesh:
         export_obj(self.vertices, self.triangles, filename)
         # mcubes.export_obj(self.vertices, self.triangles, filename)  # slower
         elapsed = time.time() - start
-        print(f"exported {filename} in {elapsed:.2f} seconds")
+        # print(f"exported {filename} in {elapsed:.2f} seconds")
+        print(f"exported {filename} !")
 
 
 def gen_mesh(data, iso_level):
@@ -97,13 +98,25 @@ def export_obj(vertices, triangles, filename):
     # str.join(("f %d %d %d\n" % ((t+1)[0], (t+1)[1], (t+1)[2])) for t in triangles)
     # f.write(str)
 
-    # Fastest so far
+    # Fastest so far (~10% slower with progress bar)
     f.write("# obj file exported from marching cube script\n")
-    for v in vertices:
+    pbar = tqdm(total=100)
+
+    step = (len(vertices)  + len(triangles)) // 100
+
+
+    for i, v in enumerate(vertices):
         f.write("v %.2f %.2f %.2f\n" % (v[0], v[1], v[2]))
-    for t in triangles:
+        if (i % step == 0):
+            pbar.update(1)
+
+    for i, t in enumerate(triangles):
         t1 = t+1
         f.write("f %d %d %d\n" % (t1[0], t1[1], t1[2]))
+        if (i % step == 0):
+            pbar.update(1)
+
+    pbar.close()
 
     f.close()
 
