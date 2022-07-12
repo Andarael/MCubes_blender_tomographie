@@ -4,14 +4,18 @@ import numpy as np
 import mcubes
 from tqdm import tqdm
 from absl import app, flags
+import time
 
 flags.DEFINE_string("INPUT_PATH", "G:\Mon Drive\Scolaire\M1_Limoges\stage M1\Work\data\Tomographie\KPP Brut AHPCS Processed", help="Input image folder")
+
 flags.DEFINE_string("OUTPUT_FILE", "mesh.obj", help="Output mesh file")
 
 flags.DEFINE_integer("START_IMG", 0, help="Start image")
+
 flags.DEFINE_integer("NB_IMG", 100, help="Number of images to load")
 
 flags.DEFINE_float("RES_MULT", 0.5, help="Image resolution multiplier")
+
 flags.DEFINE_integer("ISO_LEVEL", 127, help="Iso level")
 
 flags.DEFINE_bool("PADD", True, help="Pad the images sequence with black borders")
@@ -25,20 +29,24 @@ class Mesh:
         self.triangles = triangles
         self.nb_vertices = len(vertices)
         self.nb_triangles = len(triangles)
-        print("==>> nb_vertices: ", self.nb_vertices)
-        print("==>> nb_triangles: ", self.nb_triangles)
+        print(f"Mesh created with : {self.nb_vertices} vertices and {self.nb_triangles} triangles \n")
 
     def export(self, filename):
         print(f"exporting mesh to {filename} ... ")
-        # mcubes.export_obj(self.vertices, self.triangles, filename)  # slower, why ?!
+
+        start = time.time()
         export_obj(self.vertices, self.triangles, filename)
-        print(f"exported {filename}")
+        # mcubes.export_obj(self.vertices, self.triangles, filename)  # slower
+        elapsed = time.time() - start
+        print(f"exported {filename} in {elapsed:.2f} seconds")
 
 
 def gen_mesh(data, iso_level):
-    print(f"marching cubes with iso_level {iso_level}")
+    print(f"Starting marching cubes with iso_level {iso_level}")
+    start = time.time()
     vertices, triangles = mcubes.marching_cubes(data, iso_level)
-    print("finished marching cubes")
+    elapsed = time.time() - start
+    print(f"finished marching cubes in {elapsed:.2f} seconds")
 
     return Mesh(vertices, triangles)
 
@@ -58,7 +66,7 @@ def load_data(filepath):
     resX = round(img_temp.shape[1] * FLAGS.RES_MULT)
     resY = round(img_temp.shape[0] * FLAGS.RES_MULT)
 
-    print(f"\nloading images from {filepath}, starting at {image_files[0]} to {image_files[-1]}\n")
+    print(f"\nloading images from {filepath}, starting at {image_files[0]} to {image_files[-1]}")
     all_images = []
 
     if (FLAGS.PADD):
@@ -76,16 +84,28 @@ def load_data(filepath):
 
     all_images = np.reshape(all_images, (len(image_files) + 2*FLAGS.PADD, resY, resX))
 
+    print("\n")
+
     return all_images
 
 
 def export_obj(vertices, triangles, filename):
-    with open(filename, 'w') as f:
-        f.write("# obj file exported from marching cube script\n")
-        for v in vertices:
-            f.write("v %.2f %.2f %.2f\n" % (v[0], v[1], v[2]))
-        for t in triangles:
-            f.write("f %d %d %d\n" % ((t+1)[0], (t+1)[1], (t+1)[2]))
+    f = open(filename, 'w')
+
+    # str = "".join("# obj file exported from marching cube script\n")
+    # str.join("v %.2f %.2f %.2f\n" % (v[0], v[1], v[2]) for v in vertices)
+    # str.join(("f %d %d %d\n" % ((t+1)[0], (t+1)[1], (t+1)[2])) for t in triangles)
+    # f.write(str)
+
+    # Fastest so far
+    f.write("# obj file exported from marching cube script\n")
+    for v in vertices:
+        f.write("v %.2f %.2f %.2f\n" % (v[0], v[1], v[2]))
+    for t in triangles:
+        t1 = t+1
+        f.write("f %d %d %d\n" % (t1[0], t1[1], t1[2]))
+
+    f.close()
 
 
 def get_ranges(image_files):
@@ -101,10 +121,7 @@ def main(argv):
     mesh = gen_mesh(data, FLAGS.ISO_LEVEL)
     mesh.export(FLAGS.OUTPUT_FILE)
 
-    print("second exoprt ...  ")
-    export_obj(mesh.vertices, mesh.triangles, "mesh2.obj")
-
-    print("Done !")
+    print("\nDone !")
 
 
 if __name__ == "__main__":
