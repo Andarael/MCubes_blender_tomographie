@@ -15,7 +15,7 @@ flags.DEFINE_integer("START_IMG", 0, help="Start image")
 
 flags.DEFINE_integer("NB_IMG", 0, help="Number of images to load")
 
-flags.DEFINE_float("RES_MULT", 1.0, help="Image resolution multiplier")
+flags.DEFINE_float("RES_MULT", 0.5, help="Image resolution multiplier")
 
 flags.DEFINE_integer("ISO_LEVEL", 127, help="Iso level")
 
@@ -103,7 +103,7 @@ def export_obj(vertices, triangles, filename):
     for i, t in enumerate(triangles):
         t1 = t+1
         f.write("f %d %d %d\n" % (t1[0], t1[1], t1[2]))
-        if (i % step == 0):
+        if (i % step == 0 and pbar.n < 100):  # second condition is to stop the progress bar at 100%
             pbar.update(1)
 
     pbar.close()
