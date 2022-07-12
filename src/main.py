@@ -5,16 +5,17 @@ import mcubes
 from tqdm import tqdm
 from absl import app, flags
 import time
+import re
 
-flags.DEFINE_string("INPUT_PATH", "G:\Mon Drive\Scolaire\M1_Limoges\stage M1\Work\data\Tomographie\KPP Brut AHPCS Processed", help="Input image folder")
+flags.DEFINE_string("INPUT_PATH", "G:\Mon Drive\Scolaire\M1_Limoges\stage M1\Work\data\Tomographie\KPP_Prop_non_impregne", help="Input image folder")
 
 flags.DEFINE_string("OUTPUT_FILE", "mesh.obj", help="Output mesh file")
 
 flags.DEFINE_integer("START_IMG", 0, help="Start image")
 
-flags.DEFINE_integer("NB_IMG", 100, help="Number of images to load")
+flags.DEFINE_integer("NB_IMG", 0, help="Number of images to load")
 
-flags.DEFINE_float("RES_MULT", 0.5, help="Image resolution multiplier")
+flags.DEFINE_float("RES_MULT", 1.0, help="Image resolution multiplier")
 
 flags.DEFINE_integer("ISO_LEVEL", 127, help="Iso level")
 
@@ -39,7 +40,7 @@ class Mesh:
 
 
 def gen_mesh(data, iso_level):
-    print(f"Starting marching cubes with iso_level {iso_level}")
+    print(f"Starting marching cubes with iso_level {iso_level} ...")
     start = time.time()
     vertices, triangles = mcubes.marching_cubes(data, iso_level)
     elapsed = time.time() - start
@@ -50,7 +51,8 @@ def gen_mesh(data, iso_level):
 
 def load_data(filepath):
     image_files = os.listdir(filepath)
-    image_files.sort(key=lambda x: int(x.split('.')[0]))  # sort files
+
+    image_files.sort(key=lambda x: int(re.sub("[^0-9]", "", x)))  # sort files by number
 
     start, end = get_ranges(image_files)
     image_files = image_files[start: end]  # cut the number of files to load if necessary
