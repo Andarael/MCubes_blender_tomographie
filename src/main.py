@@ -33,12 +33,8 @@ class Mesh:
 
     def export(self, filename):
         print(f"exporting mesh to {filename} ... ")
-
-        start = time.time()
         export_obj(self.vertices, self.triangles, filename)
         # mcubes.export_obj(self.vertices, self.triangles, filename)  # slower
-        elapsed = time.time() - start
-        # print(f"exported {filename} in {elapsed:.2f} seconds")
         print(f"exported {filename} !")
 
 
@@ -86,24 +82,16 @@ def load_data(filepath):
     all_images = np.reshape(all_images, (len(image_files) + 2*FLAGS.PADD, resY, resX))
 
     print("\n")
-
     return all_images
 
 
 def export_obj(vertices, triangles, filename):
+    # Fastest so far (but ~10% slower with progress bar)
     f = open(filename, 'w')
-
-    # str = "".join("# obj file exported from marching cube script\n")
-    # str.join("v %.2f %.2f %.2f\n" % (v[0], v[1], v[2]) for v in vertices)
-    # str.join(("f %d %d %d\n" % ((t+1)[0], (t+1)[1], (t+1)[2])) for t in triangles)
-    # f.write(str)
-
-    # Fastest so far (~10% slower with progress bar)
     f.write("# obj file exported from marching cube script\n")
+
     pbar = tqdm(total=100)
-
-    step = (len(vertices)  + len(triangles)) // 100
-
+    step = (len(vertices) + len(triangles)) // 100
 
     for i, v in enumerate(vertices):
         f.write("v %.2f %.2f %.2f\n" % (v[0], v[1], v[2]))
