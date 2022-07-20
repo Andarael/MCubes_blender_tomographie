@@ -7,7 +7,9 @@ from absl import app, flags
 import time
 import re
 
-flags.DEFINE_string("INPUT_PATH", "G:\Mon Drive\Scolaire\M1_Limoges\stage M1\Work\data\Tomographie\KPP_Prop_non_impregne", help="Input image folder")
+# becarful of accents in the path
+flags.DEFINE_string("INPUT_PATH", "G:\Mon Drive\Scolaire\M1_Limoges\stage M1\Work\data\Tomographie\KPP_Prop_AHPCS_dilue_TT_1000",
+                    help="Input image folder")
 
 flags.DEFINE_string("OUTPUT_FILE", "mesh.obj", help="Output mesh file")
 
@@ -15,11 +17,11 @@ flags.DEFINE_integer("START_IMG", 0, help="Start image")
 
 flags.DEFINE_integer("NB_IMG", 0, help="Number of images to load")
 
-flags.DEFINE_float("RES_MULT", 0.5, help="Image resolution multiplier")
+flags.DEFINE_float("RES_MULT", 1.0, help="Image resolution multiplier")
 
 flags.DEFINE_integer("ISO_LEVEL", 127, help="Iso level")
 
-flags.DEFINE_bool("PADD", True, help="Pad the images sequence with black borders")
+flags.DEFINE_bool("PADD", True, help="Pad the whole images sequence with black borders")
 
 FLAGS = flags.FLAGS
 
@@ -69,6 +71,8 @@ def load_data(filepath):
     all_images = []
 
     if (FLAGS.PADD):
+        resX += 2
+        resY += 2
         all_images.append(np.zeros((resY, resX), dtype=np.uint8))
 
     for image_file in tqdm(image_files):
@@ -76,12 +80,19 @@ def load_data(filepath):
         img = cv2.imread(img_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img = cv2.resize(img, None, fx=FLAGS.RES_MULT, fy=FLAGS.RES_MULT)
+
+        if FLAGS.PADD:  # padd the image with black borders
+            img = cv2.copyMakeBorder(img, 1, 1, 1, 1, cv2.BORDER_CONSTANT, value=0)
+
         all_images.append(img)
 
     if (FLAGS.PADD):
         all_images.append(np.zeros((resY, resX), dtype=np.uint8))
 
     all_images = np.reshape(all_images, (len(image_files) + 2*FLAGS.PADD, resY, resX))
+
+    # roll 90 degrees on Y axis to get the correct orientation
+    all_images = np.rollaxis(all_images, 1, 0)
 
     print("\n")
     return all_images
