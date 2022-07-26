@@ -32,3 +32,5 @@ cython_debug/
 
 
 *.obj
+
+data/*
