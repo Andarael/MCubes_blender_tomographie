@@ -7,11 +7,11 @@ output = "C:/Users/josur/Documents/TT 1000 KPP Prop 7 couches_edit.obj"
 
 # Mesh options
 scale = 1.0
-scale_z = 1.0 # must correspond to scale factor used in the marching cubes algorithm
+scale_z = 1.0  # must correspond to scale factor used in the marching cubes algorithm
 
 # Decimation options
 decimation_ratio = 0.1
-apply_modifiers = True # applying modifier is faster for export, but we loose the original geometry
+apply_modifiers = True  # applying modifier is faster for export, but we loose the original geometry
 
 # Loose parts options
 separate_by_loose_parts = False
