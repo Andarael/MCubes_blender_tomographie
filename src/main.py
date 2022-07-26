@@ -119,7 +119,6 @@ def export_obj(vertices, triangles, filename):
             pbar.update(1)
 
     pbar.close()
-
     f.close()
 
 
