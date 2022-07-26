@@ -29,13 +29,13 @@ def select_objects_by_vertex_count(count=0, mode='higher'):
     for o in bpy.data.objects:
         if isinstance(o.data, bpy.types.Mesh):
 
-            if len(o.data.vertices) < count and mode == 'lower':
+            if (len(o.data.vertices) < count and mode == 'lower'):
                 objlist.append(o)
 
-            elif len(o.data.vertices) > count and mode == 'higher':
+            elif (len(o.data.vertices) > count and mode == 'higher'):
                 objlist.append(o)
 
-            elif len(o.data.vertices) == count and mode == 'equal':
+            elif (len(o.data.vertices) == count and mode == 'equal'):
                 objlist.append(o)
 
     if (objlist == []):
