@@ -8,16 +8,16 @@ import time
 import re
 
 # becarful of accents in the path
-flags.DEFINE_string("INPUT_PATH", "G:\Mon Drive\Scolaire\M1_Limoges\stage M1\Work\data\Tomographie\KPP_Prop_AHPCS_dilue_TT_1000",
+flags.DEFINE_string("INPUT_PATH", "./data/",
                     help="Input image folder")
 
-flags.DEFINE_string("OUTPUT_FILE", "mesh.obj", help="Output mesh file")
+flags.DEFINE_string("OUTPUT_FILE", "KPP Brut TEOS TT 1400.obj", help="Output mesh file")
 
 flags.DEFINE_integer("START_IMG", 0, help="Start image")
 
 flags.DEFINE_integer("NB_IMG", 0, help="Number of images to load")
 
-flags.DEFINE_float("RES_MULT", 1.0, help="Image resolution multiplier")
+flags.DEFINE_float("RES_MULT", 0.33, help="Image resolution multiplier")
 
 flags.DEFINE_integer("ISO_LEVEL", 127, help="Iso level")
 
@@ -52,22 +52,23 @@ def gen_mesh(data, iso_level):
 
 
 def load_data(filepath):
-    image_files = os.listdir(filepath)
+    image_sequence = os.listdir(filepath)
 
-    image_files.sort(key=lambda x: int(re.sub("[^0-9]", "", x)))  # sort files by number
+    image_sequence.sort(key=lambda x: int(re.sub("[^0-9]", "", x)))  # sort files by number
 
-    start, end = get_ranges(image_files)
-    image_files = image_files[start: end]  # cut the number of files to load if necessary
+    start, end = get_ranges(image_sequence)
+    image_sequence = image_sequence[start: end]  # cut the number of files to load if necessary
 
-    if (image_files is None or len(image_files) == 0):
-        print("No image files found in the specified folder")
+    if (image_sequence is None or len(image_sequence) == 0):
+        print("No image sequence found in the specified folder")
         return None
 
-    img_temp = cv2.imread(os.path.join(filepath, image_files[0]))
+    # loading an image to get the x and y sizes
+    img_temp = cv2.imread(os.path.join(filepath, image_sequence[0]))
     resX = round(img_temp.shape[1] * FLAGS.RES_MULT)
     resY = round(img_temp.shape[0] * FLAGS.RES_MULT)
 
-    print(f"\nloading images from {filepath}, starting at {image_files[0]} to {image_files[-1]}")
+    print(f"\nloading images from {filepath}, starting at {image_sequence[0]} to {image_sequence[-1]}")
     all_images = []
 
     if (FLAGS.PADD):
@@ -75,7 +76,7 @@ def load_data(filepath):
         resY += 2
         all_images.append(np.zeros((resY, resX), dtype=np.uint8))
 
-    for image_file in tqdm(image_files):
+    for image_file in tqdm(image_sequence):
         img_path = os.path.join(filepath, image_file)
         img = cv2.imread(img_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -89,7 +90,7 @@ def load_data(filepath):
     if (FLAGS.PADD):
         all_images.append(np.zeros((resY, resX), dtype=np.uint8))
 
-    all_images = np.reshape(all_images, (len(image_files) + 2*FLAGS.PADD, resY, resX))
+    all_images = np.reshape(all_images, (len(image_sequence) + 2*FLAGS.PADD, resY, resX))
 
     # roll 90 degrees on Y axis to get the correct orientation
     all_images = np.rollaxis(all_images, 1, 0)
