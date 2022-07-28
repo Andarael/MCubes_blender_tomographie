@@ -9,7 +9,7 @@ radius_min = 0.1
 radius_max = 1.0
 
 duplicate = True  # keep a copy of the mesh
-apply_all = True  # apply all modifier before generating point cloud
+apply_all_modifiers = True  # apply all modifier before generating point cloud
 
 # ==============================================================================
 
@@ -27,7 +27,7 @@ if (duplicate):
 selected_object = C.selected_objects[0]
 selected_object.name = "Point Cloud"
 
-if (apply_all):
+if (apply_all_modifiers):
     for mod in selected_object.modifiers:
         bpy.ops.object.modifier_apply(modifier=mod.name)
 
@@ -40,12 +40,10 @@ geo_node_mod["Input_5"] = float(radius_max)
 geo_node_mod["Output_6_attribute_name"] = scale_attribute_name
 bpy.ops.object.modifier_apply(modifier=geo_node_mod_name)
 
-# move the points cloud above the surface according to particle radius
+# create vert + raidus array
 verts = selected_object.data.vertices
 output = []
 for i, v in enumerate(verts):
-    radius = np.random.uniform(radius_min, radius_max)
-    #v.co += v.normal*radius
     radius = selected_object.data.attributes['scale'].data[i].value
     data = (v.co[0], v.co[1], v.co[2], radius)
     output.append(data)
