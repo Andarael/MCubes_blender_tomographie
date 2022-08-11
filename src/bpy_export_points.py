@@ -51,4 +51,4 @@ for i, v in enumerate(verts):
 # conversion to numpy array & export
 output = np.array(output)
 np.reshape(output, (len(verts), 4))
-np.savetxt(output_path, output, fmt="%10.5f", delimiter=" ", newline=",\n", header="  pos[0]     pos[1]      pos[2]    radius")
+np.savetxt(output_path, output, fmt="%10.5f", delimiter=" ", newline="\n", header="  pos[0]     pos[1]      pos[2]    radius")
