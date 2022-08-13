@@ -89,6 +89,7 @@ def add_decimate_modifiers(objects):
         decimate_modifier.decimate_type = 'COLLAPSE'
         decimate_modifier.ratio = decimation_ratio
         # no need to apply modifier, it is applied automatically at export
+        # todo set display = none
         if (apply_modifiers):
             print("Info: Apply modifier ...")
             bpy.ops.object.modifier_apply(modifier=mod_name)
