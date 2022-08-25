@@ -1,6 +1,8 @@
 os
 cv2
 numpy
-mcubes
+pymcubes
 tqdm
+absl-py
 flask
+scipy
