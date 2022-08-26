@@ -34,3 +34,5 @@ cython_debug/
 *.obj
 
 data/*
+output/
+*.blend1
