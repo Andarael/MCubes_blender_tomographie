@@ -127,7 +127,7 @@ def execute_script():
 if __name__ == '__main__':
     start_time = time.time()
     print("\n\n==========================================================")
-    print("Info: Start script ...\n")
+    print("Info: Start mesh processing  script ...\n")
     execute_script()
     print("\nInfo: Script finished in {:.2f} seconds".format(time.time() - start_time))
     print("==========================================================\n")
