@@ -8,14 +8,15 @@ import time
 import re
 
 # becarful of accents in the path
-flags.DEFINE_string("INPUT_PATH", "./data/",
+flags.DEFINE_string("INPUT_PATH", "./data/KPP_Brut_AHPCS_dilue_TT_1000/",
                     help="Input image folder")
 
-flags.DEFINE_string("OUTPUT_FILE", "KPP Brut TEOS TT 1400.obj", help="Output mesh file")
+flags.DEFINE_string("OUTPUT_FILE", "KPP_Brut_AHPCS_dilue_TT_1000.obj",
+                    help="Output mesh file")
 
 flags.DEFINE_integer("START_IMG", 0, help="Start image")
 
-flags.DEFINE_integer("NB_IMG", 0, help="Number of images to load")
+flags.DEFINE_integer("NB_IMG", 50, help="Number of images to load")
 
 flags.DEFINE_float("RES_MULT", 0.33, help="Image resolution multiplier")
 
