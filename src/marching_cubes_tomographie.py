@@ -1,11 +1,12 @@
 import os
-import cv2
-import numpy as np
-import mcubes
-from tqdm import tqdm
-from absl import app, flags
-import time
 import re
+import time
+
+import cv2
+import mcubes
+import numpy as np
+from absl import app, flags
+from tqdm import tqdm
 
 # becarful of accents in the path
 flags.DEFINE_string("INPUT_PATH", "./data/KPP_Brut_AHPCS_dilue_TT_1000/",
@@ -18,7 +19,7 @@ flags.DEFINE_integer("START_IMG", 0, help="Start image")
 
 flags.DEFINE_integer("NB_IMG", 50, help="Number of images to load")
 
-flags.DEFINE_float("RES_MULT", 0.33, help="Image resolution multiplier")
+flags.DEFINE_float("RES_MULT", 0.5, help="Image resolution multiplier")
 
 flags.DEFINE_integer("ISO_LEVEL", 127, help="Iso level")
 

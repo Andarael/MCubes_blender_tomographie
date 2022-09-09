@@ -14,18 +14,18 @@ decimation_ratio = 0.1
 apply_modifiers = True  # applying modifier is faster for export, but we loose the original geometry
 
 # Loose parts options
-separate_by_loose_parts = False
-nb_loose_parts_to_merge = 1
-min_nb_count = 100000
+separate_by_loose_parts = False # Separate loose parts (optional, heavy operation)
+nb_loose_parts_to_merge = 0  # only merge this number of loose parts for the final mesh, 0 means all
+min_nb_count = 100000  # only merge objects with more than min_nb_count vertices
 
-# clean up options
+# clean up options (optional but recomended when using decimation)
 remove_duplicates = True
 remove_degenerate = True
 
 # ======================================================================================================================
 
 
-def select_objects_by_vertex_count(count=0, mode='higher'):
+def select_objects_by_vertex_count(count=0, mode='higher', max_count=0):
     """select objects by vertex count"""
     objlist = []
     for o in bpy.data.objects:
@@ -48,7 +48,9 @@ def select_objects_by_vertex_count(count=0, mode='higher'):
 
     objlist.sort(key=lambda x: len(x.data.vertices))
 
-    objlist = objlist[:nb_loose_parts_to_merge]
+    if (max_count > 0):
+        objlist = objlist[:max_count]
+
     for o in objlist:
         o.select_set(True)
 
@@ -110,7 +112,7 @@ def execute_script():
 
     print("Info: Delete low vertex count objects ...")
     bpy.ops.object.select_all(action='DESELECT')
-    select_objects_by_vertex_count(min_nb_count)
+    select_objects_by_vertex_count(min_nb_count, mode='higher', max_count=nb_loose_parts_to_merge)
     bpy.ops.object.join()
     bpy.ops.object.select_all(action='INVERT')
     bpy.ops.object.delete(use_global=False)
