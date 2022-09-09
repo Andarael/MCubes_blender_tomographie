@@ -133,7 +133,3 @@ if __name__ == '__main__':
     execute_script()
     print("\nInfo: Script finished in {:.2f} seconds".format(time.time() - start_time))
     print("==========================================================\n")
-
-
-# TODO : cut in the unit cube
-# TODO : add option to select all in loose parts
